@@ -23,3 +23,23 @@ model Employees {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+model Books {
+  id         String      @id
+  title      String
+  author     String
+  isbn       String      @unique
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  BooksCopy  BooksCopy[]
+}
+
+model BooksCopy {
+  id         String   @id
+  book       Books    @relation(fields: [book_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  book_id    String
+  copy_code  String   @unique
+  status     String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

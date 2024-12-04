@@ -1,13 +1,12 @@
 import isEmail from 'validator/lib/isEmail';
 import { Response } from 'express';
-import { PrismaClient } from '@prisma/client';
 import { v4 } from 'uuid';
 import { hashSync, compareSync } from 'bcrypt';
 
+import prisma from '../config/prisma';
+
 import { RequestProps } from '../interfaces/request-props';
 import { EmployeesBodyProps } from '../interfaces/employees-body-props';
-
-const prisma = new PrismaClient();
 
 class EmployeesController {
   async index(req: RequestProps, res: Response) {
