@@ -72,7 +72,7 @@ model RentedBooks {
   return_date DateTime?
   limit_date  DateTime
   status      String
-  fine        Int
+  fine        Int?
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 }
