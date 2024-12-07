@@ -4,6 +4,7 @@ import 'dotenv/config';
 import employeesRouter from './routes/employees-route';
 import booksRouter from './routes/books-route';
 import booksCopyRouter from './routes/books-copy-router';
+import clientsRouter from './routes/clients-route';
 
 class App {
   public app: express.Application;
@@ -23,6 +24,7 @@ class App {
     this.app.use('/employees', employeesRouter);
     this.app.use('/books', booksRouter);
     this.app.use('/books-copy', booksCopyRouter);
+    this.app.use('/clients', clientsRouter);
   }
 }
 

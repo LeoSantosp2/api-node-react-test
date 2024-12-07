@@ -35,11 +35,44 @@ model Books {
 }
 
 model BooksCopy {
-  id         String   @id
-  book       Books    @relation(fields: [book_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
-  book_id    String
-  copy_code  String   @unique
-  status     String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id          String        @id
+  book        Books         @relation(fields: [book_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  book_id     String
+  copy_code   String        @unique
+  status      String
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  RentedBooks RentedBooks[]
+}
+
+model Clients {
+  id                   String        @id
+  name                 String
+  cpf                  String        @unique
+  date_of_birth        String
+  street_address       String
+  number_address       String
+  complement_address   String
+  neighborhood_address String
+  city_address         String
+  state_address        String
+  zipcode_address      String
+  created_at           DateTime      @default(now())
+  updated_at           DateTime      @updatedAt
+  RentedBooks          RentedBooks[]
+}
+
+model RentedBooks {
+  id          String    @id
+  client      Clients   @relation(fields: [client_id], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  client_id   String
+  books_copy  BooksCopy @relation(fields: [copy_code], references: [copy_code], onUpdate: Cascade, onDelete: Cascade)
+  copy_code   String
+  rent_date   DateTime
+  return_date DateTime?
+  limit_date  DateTime
+  status      String
+  fine        Int
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
 }
