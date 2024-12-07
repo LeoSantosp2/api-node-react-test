@@ -5,6 +5,7 @@ export interface RequestProps<T = undefined> extends Request {
     id: string;
     bookId: string;
     copyCode: string;
+    clientId: string;
   };
 
   body: T;
