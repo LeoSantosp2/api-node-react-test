@@ -9,7 +9,20 @@ import { ClientsBodyProps } from '../interfaces/clients-body-props';
 class ClientsController {
   async index(req: RequestProps, res: Response) {
     try {
-      const clients = await prisma.clients.findMany();
+      const { q } = req.query;
+
+      if (q) {
+        const clients = await prisma.clients.findMany({
+          where: { OR: [{ name: { contains: q } }, { cpf: { contains: q } }] },
+          orderBy: { name: 'asc' },
+        });
+
+        return res.status(200).json(clients);
+      }
+
+      const clients = await prisma.clients.findMany({
+        orderBy: { name: 'asc' },
+      });
 
       return res.status(200).json(clients);
     } catch (err) {
