@@ -8,5 +8,13 @@ export interface RequestProps<T = undefined> extends Request {
     clientId: string;
   };
 
+  query: {
+    page: string;
+    limit: string;
+    copyCode: string;
+    status: string;
+    q: string;
+  };
+
   body: T;
 }
