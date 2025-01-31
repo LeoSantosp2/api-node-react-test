@@ -5,13 +5,126 @@ import prisma from '../config/prisma';
 
 import { RequestProps } from '../interfaces/request-props';
 import { BooksBodyProps } from '../interfaces/books-body-props';
+import { BooksProps } from '../interfaces/books-props';
 
 class BooksController {
   async index(req: RequestProps, res: Response) {
     try {
-      const books = await prisma.books.findMany();
+      const { page, limit, status, q } = req.query;
 
-      return res.status(200).json(books);
+      let books: BooksProps[] = [];
+      let totalBooks: number = 0;
+
+      if (!page || !limit) {
+        return res
+          .status(400)
+          .json({ error: 'Necessário inserir na URL, o page e limit.' });
+      }
+
+      if (q && status) {
+        books = await prisma.booksCopy.findMany({
+          take: Number(limit),
+          skip: Number(page),
+          orderBy: { book: { title: 'asc' } },
+          select: {
+            id: true,
+            copy_code: true,
+            status: true,
+            book: {
+              select: { id: true, title: true, author: true, isbn: true },
+            },
+          },
+          where: {
+            AND: [
+              { book: { OR: [{ title: q }, { author: q }, { isbn: q }] } },
+              { status },
+            ],
+          },
+        });
+
+        totalBooks = await prisma.booksCopy.count({
+          where: {
+            AND: [
+              { book: { OR: [{ title: q }, { author: q }, { isbn: q }] } },
+              { status },
+            ],
+          },
+        });
+
+        return res.status(200).json({ data: books, total: totalBooks });
+      }
+
+      if (q) {
+        books = await prisma.booksCopy.findMany({
+          take: Number(limit),
+          skip: Number(page),
+          orderBy: { book: { title: 'asc' } },
+          select: {
+            id: true,
+            copy_code: true,
+            status: true,
+            book: {
+              select: { id: true, title: true, author: true, isbn: true },
+            },
+          },
+          where: {
+            book: { OR: [{ title: q }, { author: q }, { isbn: q }] },
+          },
+        });
+
+        totalBooks = await prisma.booksCopy.count({
+          where: {
+            book: { OR: [{ title: q }, { author: q }, { isbn: q }] },
+          },
+        });
+
+        return res.status(200).json({ data: books, total: totalBooks });
+      }
+
+      if (status) {
+        books = await prisma.booksCopy.findMany({
+          take: Number(limit),
+          skip: Number(page),
+          orderBy: { book: { title: 'asc' } },
+          select: {
+            id: true,
+            copy_code: true,
+            status: true,
+            book: {
+              select: { id: true, title: true, author: true, isbn: true },
+            },
+          },
+          where: {
+            status,
+          },
+        });
+
+        totalBooks = await prisma.booksCopy.count({
+          where: {
+            status,
+          },
+        });
+
+        return res.status(200).json({ data: books, total: totalBooks });
+      }
+
+      books = await prisma.booksCopy.findMany({
+        take: Number(limit),
+        skip: Number(page),
+        orderBy: { book: { title: 'asc' } },
+        select: {
+          id: true,
+          copy_code: true,
+          status: true,
+          book: {
+            select: { id: true, title: true, author: true, isbn: true },
+          },
+        },
+      });
+
+      totalBooks = await prisma.booksCopy.count();
+
+      return res.status(200).json({ data: books, total: totalBooks });
     } catch (err) {
       return res.status(400).json({ error: (err as Error).message });
     }
