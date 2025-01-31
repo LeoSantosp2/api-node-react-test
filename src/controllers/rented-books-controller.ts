@@ -33,17 +33,17 @@ class RentedBooksController {
 
   async store(req: RequestProps<RentedBooksBodyProps>, res: Response) {
     try {
-      const { client_id, copy_code, limit_date, rent_date, status } = req.body;
+      const { cpf, copy_code, limit_date, rent_date, status } = req.body;
 
-      if (!client_id || !copy_code || !limit_date || !rent_date || !status) {
+      if (!cpf || !copy_code || !limit_date || !rent_date || !status) {
         return res
           .status(400)
           .json({ error: 'Os campos não podem estar vazios.' });
       }
 
       const client = await prisma.clients.findFirst({
-        select: { name: true },
-        where: { id: client_id },
+        select: { id: true, name: true },
+        where: { cpf },
       });
 
       if (!client) {
@@ -58,13 +58,13 @@ class RentedBooksController {
         return res.status(404).json({ error: 'Cópia não encontrada.' });
       }
 
-      if (bookCopy.status === 'rented') {
+      if (bookCopy.status === 'Alugado') {
         return res.status(400).json({ error: 'Cópia já está alugada.' });
       }
 
       const newRentedBook = {
         id: v4(),
-        client_id,
+        client_id: client.id,
         copy_code,
         rent_date: new Date(rent_date),
         limit_date: new Date(limit_date),
@@ -73,7 +73,7 @@ class RentedBooksController {
 
       await prisma.rentedBooks.create({ data: newRentedBook });
       await prisma.booksCopy.update({
-        data: { status: 'rented' },
+        data: { status: 'Alugado' },
         where: { copy_code },
       });
 
@@ -86,9 +86,10 @@ class RentedBooksController {
   async update(req: RequestProps<RentedBooksBodyProps>, res: Response) {
     try {
       const { id } = req.params;
-      const { return_date, status } = req.body;
+      const { status } = req.body;
+      const { copyCode } = req.query;
 
-      if (!return_date || !status) {
+      if (!status) {
         return res
           .status(400)
           .json({ error: 'Os campos não podem estar vazios.' });
@@ -103,8 +104,13 @@ class RentedBooksController {
       }
 
       await prisma.rentedBooks.update({
-        data: { return_date: new Date(return_date), status },
+        data: { return_date: new Date(), status },
         where: { id },
+      });
+
+      await prisma.booksCopy.update({
+        data: { status: 'Disponível' },
+        where: { copy_code: copyCode },
       });
 
       return res.status(200).json('Aluguel finalizado com sucesso.');
