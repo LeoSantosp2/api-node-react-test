@@ -13,6 +13,10 @@ export interface RequestProps<T = undefined> extends Request {
     limit: string;
     copyCode: string;
     status: string;
+    withdrawal: string;
+    month: string;
+    year: string;
+    city: string;
     q: string;
   };
 
