@@ -8,6 +8,7 @@ import booksCopyRouter from './routes/books-copy-route';
 import clientsRouter from './routes/clients-route';
 import rentedBooksRouter from './routes/rented-books-route';
 import loginRouter from './routes/login-route';
+import reportsRouter from './routes/reports-route';
 
 const corsOptions = {
   origin: 'http://localhost:3000',
@@ -36,6 +37,7 @@ class App {
     this.app.use('/clients', clientsRouter);
     this.app.use('/rented-books', rentedBooksRouter);
     this.app.use('/login', loginRouter);
+    this.app.use('/reports', reportsRouter);
   }
 }
 
