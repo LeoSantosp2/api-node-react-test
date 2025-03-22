@@ -169,7 +169,7 @@ class BooksController {
         id: v4(),
         book_id: newBook.id,
         copy_code,
-        status: 'available',
+        status: 'Disponível',
       };
 
       await prisma.books.create({ data: newBook });
